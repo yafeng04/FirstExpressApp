@@ -1,0 +1,9 @@
+<h1>results page</h1>
+
+<% data['Search'].forEach(function(result){  %>
+  <li>
+    <%= result['Year'] %> - <%= result['Title'] %>
+  </li>
+<% }) %>
+
+<a href="/">search again</a>

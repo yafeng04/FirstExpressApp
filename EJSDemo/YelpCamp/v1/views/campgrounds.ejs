@@ -1,0 +1,36 @@
+<%include partials/header %>
+
+<div class="container">
+
+    <header class="jumbotron">
+      <div class="container">
+
+          <h1>this is the campgrounds page!</h1>
+          <p>
+            View out ads everywhere
+          </p>
+          <p>
+            <a href="/campgrounds/new">add new campground</a>
+          </p>
+      </div>
+
+    </header>
+
+<!--  make image align to each other even though some of them are bigger-->
+      <div class="row text-center" style="display:flex; flex-wrap: wrap;"> 
+
+          <% campgrounds.forEach(function(campground){ %>
+            <div class="col-md-3 col-sm-6">
+              <div class="thumbnail">
+                <img src=" <%= campground.image %>" />
+              </div>
+              <div class="caption">
+                <h4><%= campground.name  %></h4>
+
+              </div>
+            </div>
+            <% }) %>
+      </div>
+  </div>
+
+<%include partials/footer %>
