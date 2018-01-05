@@ -1,41 +1,32 @@
 var express = require('express'),
   bodyParser = require('body-parser'),
   mongoose = require('mongoose'),
-  app = express();
+  app = express(),
+  Campground = require('./models/campground'),
+  seedDB = require('./seeds');
+
+
 
 //create database even from the following line
 //127.0.0.1:27017
 mongoose.connect("mongodb://localhost/yelp_camp");
-
-var campgroundSchema = new mongoose.Schema({
-  name: String,
-  image: String,
-  description: String
-});
-
-var Campground = mongoose.model('Campground', campgroundSchema);
-
-Campground.create({
-  name: "lt",
-  image: "http://p2.cri.cn/M00/43/E5/CqgNOlcZ3_CAazg-AAAAAAAAAAA076.500x845.jpg",
-  description: "nice looking liutao"
-
-}, function(err, campground) {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log('newly created CampGround');
-    console.log(campground);
-  }
-});
-
-
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-
-
+app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
+seedDB();  
+// Campground.create({
+//   name: "lt",
+//   image: "http://p2.cri.cn/M00/43/E5/CqgNOlcZ3_CAazg-AAAAAAAAAAA076.500x845.jpg",
+//   description: "nice looking liutao"
+
+// }, function(err, campground) {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log('newly created CampGround');
+//     console.log(campground);
+//   }
+// });
+
 
 app.get("/", function(req, res) {
 
@@ -52,10 +43,11 @@ app.get('/campgrounds/new', function(req, res) {
 //show more info about one campground
 app.get('/campgrounds/:id', function(req, res) {
 
-  Campground.findById(req.params.id, function(err, foundCampground) {
+  Campground.findById(req.params.id).populate('comments').exec(function(err, foundCampground) {
     if (err) {
       console.log(err);
     } else {
+      console.log(foundCampground);
       res.render('show', {
         campground: foundCampground
       });
