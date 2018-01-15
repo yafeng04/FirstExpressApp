@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var Campground = require('../models/campground');
+var middleware = require('../middleware');
 
-
-router.get('/new', isLoggedIn, function (req, res) {
+router.get('/new', middleware.isLoggedIn, function (req, res) {
 
     res.render("campgrounds/new.ejs");
 
@@ -46,7 +46,7 @@ router.get("/", function (req, res) {
 
 });
 
-router.post('/', isLoggedIn, function (req, res) {
+router.post('/', middleware.isLoggedIn, function (req, res) {
     //get data from form and redirect back to campground page
     // res.send("u hit the post page");
     var name = req.body.name;
@@ -76,12 +76,28 @@ router.post('/', isLoggedIn, function (req, res) {
 
 });
 
+//EDIT: its still get method since html5 doesnt support put method
+router.get('/:id/edit',middleware.checkCampgroundOwnership, function (req, res) {
+        Campground.findById(req.params.id, function(err, foundCampground){
+        res.render('campgrounds/edit', {campground: foundCampground});
+        });
+});
 
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect('/login');
-}
+
+//UPDATE
+router.put('/:id',middleware.checkCampgroundOwnership, function(req, res){
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
+        if(err) res.redirect('/campgrounds');
+        else res.redirect('/campgrounds/'+ req.params.id);
+    });
+});
+
+//destroy campground ROUTE
+router.delete('/:id',middleware.checkCampgroundOwnership, function(req, res){
+    Campground.findByIdAndRemove(req.params.id, function(err){
+        if(err) res.redirect('/campgrounds');
+        else res.redirect('/campgrounds/');
+    });
+});
 
 module.exports = router;

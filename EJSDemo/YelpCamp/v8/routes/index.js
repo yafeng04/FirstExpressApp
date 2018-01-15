@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var User = require('./models/user');
+var User = require('../models/user');
+var app = express();
 
 app.get("/", function (req, res) {
 
@@ -23,7 +24,7 @@ router.post('/register', function (req, res) {
     }), req.body.password, function (err, user) {
 
         if (err) {
-            console.log(err);
+            req.flash("error", err.message);
             return res.render('register');
         }
         passport.authenticate('local')(req, res, function(){
@@ -48,6 +49,7 @@ router.post('/login', passport.authenticate('local', {
 //LOGOUT ROUTE
 //LOGIN ROUTES
 router.get('/logout', function (req, res) {
+    req.flash("success", "Logged you out");
     req.logout();
     res.redirect('/campgrounds');
 });

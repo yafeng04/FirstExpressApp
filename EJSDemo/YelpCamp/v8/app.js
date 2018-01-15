@@ -8,7 +8,9 @@ var express = require('express'),
     passport = require('passport'),
     seedDB = require('passport-local'),
     User = require('./models/user'),
-    LocalStrategy = require('passport-local');
+    methodOverride = require('method-override'),
+    LocalStrategy = require('passport-local')
+    flash = require('connect-flash');
 
 //requiring routes
 var commentRoutes = require('./routes/comments'),
@@ -23,6 +25,8 @@ app.use(bodyParser.urlencoded({
 }));
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname+'/public'));
+app.use(methodOverride('_method'));
+app.use(flash());
 seedDB();
 // Campground.create({
 //   name: "lt",
@@ -54,6 +58,9 @@ passport.deserializeUser(User.deserializeUser());
 //pass currentUser to all templates
 app.use(function(req, res, next){
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
+
     next();
 });
 
